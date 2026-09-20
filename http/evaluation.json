@@ -1,0 +1,17 @@
+{
+  "eventId": "auction-2026-09-20-001",
+  "eventType": "auction",
+  "subjectId": "sha256:7e6f9b7f5f0c-example",
+  "occurredAt": "2026-09-20T10:15:30Z",
+  "signals": {
+    "trustTier": 0,
+    "requestsPerMinute": 150,
+    "ipRisk": 0.31,
+    "deviceIntegrity": "UNKNOWN",
+    "emulator": false,
+    "country": "DE",
+    "attributes": {
+      "placement": "home-feed"
+    }
+  }
+}

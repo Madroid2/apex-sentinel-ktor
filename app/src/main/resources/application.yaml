@@ -1,0 +1,18 @@
+ktor:
+  application:
+    modules:
+      - com.apex.sentinel.ApplicationKt.module
+  deployment:
+    port: "$PORT:8080"
+
+sentinel:
+  environment: "$SENTINEL_ENV:development"
+  storage: "$SENTINEL_STORAGE:memory"
+  databaseUrl: "$DATABASE_URL:jdbc:postgresql://localhost:5432/sentinel"
+  databaseUser: "$DATABASE_USER:sentinel"
+  databasePassword: "$DATABASE_PASSWORD:sentinel"
+  apiKeys: "$SENTINEL_API_KEYS:apex:dev-apex-key"
+  adminKey: "$SENTINEL_ADMIN_KEY:dev-admin-key"
+  rateLimit:
+    capacity: "$RATE_LIMIT_CAPACITY:120"
+    refillPerSecond: "$RATE_LIMIT_REFILL_PER_SECOND:2"

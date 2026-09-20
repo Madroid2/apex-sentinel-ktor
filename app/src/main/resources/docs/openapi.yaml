@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: Apex Sentinel API
+  version: 1.0.0
+  description: Explainable, idempotent traffic-policy decisions for Apex and other backend systems.
+servers:
+  - url: http://localhost:8080
+paths:
+  /health/live:
+    get:
+      operationId: live
+      responses:
+        '200': { description: Process is alive }
+  /health/ready:
+    get:
+      operationId: ready
+      responses:
+        '200': { description: Dependencies are ready }
+        '503': { description: A dependency is unavailable }
+  /v1/evaluations:
+    post:
+      operationId: evaluateTraffic
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, maxLength: 200 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EvaluationRequest' }
+      responses:
+        '201': { description: A new decision was created }
+        '200': { description: A previous decision was replayed }
+        '400': { description: Invalid input }
+        '401': { description: Missing or invalid API key }
+        '429': { description: Tenant rate limit exceeded }
+  /v1/evaluations/{id}:
+    get:
+      operationId: getEvaluation
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Evaluation found }
+        '404': { description: Evaluation not found }
+  /v1/incidents/brief:
+    get:
+      operationId: createIncidentBrief
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: lookbackMinutes
+          schema: { type: integer, default: 60, minimum: 1, maximum: 10080 }
+      responses:
+        '200': { description: Explainable incident brief }
+  /v1/evaluations/stream:
+    get:
+      operationId: streamEvaluations
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: Server-sent evaluation events
+          content: { text/event-stream: {} }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  schemas:
+    EvaluationRequest:
+      type: object
+      required: [eventId, eventType, subjectId, signals]
+      properties:
+        eventId: { type: string }
+        eventType: { type: string }
+        subjectId: { type: string, description: Pseudonymous subject identifier }
+        occurredAt: { type: string, format: date-time }
+        signals:
+          type: object
+          required: [trustTier, requestsPerMinute, ipRisk, deviceIntegrity]
+          properties:
+            trustTier: { type: integer, minimum: 0, maximum: 3 }
+            requestsPerMinute: { type: integer, minimum: 0 }
+            ipRisk: { type: number, minimum: 0, maximum: 1 }
+            deviceIntegrity: { type: string }
+            emulator: { type: boolean, default: false }
+            country: { type: string }
