@@ -4,7 +4,7 @@ A production-shaped Ktor 3 service for explainable, multi-tenant traffic decisio
 
 This is deliberately a **control plane**, not a replacement for Apex's Go auction hot path. Go keeps doing latency-sensitive auction fan-out; Sentinel owns versioned policy, durable audit history, incident briefs, and live operational streams.
 
-## Why this is a strong portfolio project
+## What this adds or resolves?
 
 - Real backend concerns: authentication, tenant isolation, validation, idempotency, safe errors, rate limits, health/readiness, metrics, migrations, and structured logs.
 - Kotlin strengths: immutable domain models, sealed-ish enum vocabulary, null safety, collection DSLs, coroutines, and `Flow`/SSE.
